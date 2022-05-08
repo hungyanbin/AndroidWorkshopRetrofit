@@ -1,4 +1,8 @@
 package com.yanbin.androidworkshop_retrofit
 
-class User(val id: String, val url: String) {
+import com.squareup.moshi.Json
+
+data class User(
+    @field:Json(name = "id") val id: String,
+    @field:Json(name = "url") val url: String) {
 }

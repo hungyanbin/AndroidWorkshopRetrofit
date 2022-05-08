@@ -5,13 +5,14 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
+import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.*
 
 
 interface GitHubApi {
 
     @GET("users/{user}")
-    fun getUserInfo(@Path("user") user: String): Call<ResponseBody>
+    fun getUserInfo(@Path("user") user: String): Call<User>
 }
 
 class RetrofitSample {
@@ -21,6 +22,7 @@ class RetrofitSample {
     init {
         val retrofit = Retrofit.Builder()
             .baseUrl("https://api.github.com/")
+            .addConverterFactory(MoshiConverterFactory.create())
             .build()
 
         gitHubApi = retrofit.create(GitHubApi::class.java)
@@ -28,15 +30,12 @@ class RetrofitSample {
 
     fun getGithubUser(user: String, onSuccess: (String) -> Unit){
         val call = gitHubApi.getUserInfo(user)
-        call.enqueue(object: Callback<ResponseBody> {
-            override fun onResponse(
-                call: Call<ResponseBody>,
-                response: Response<ResponseBody>
-            ) {
-                onSuccess(response.body()?.string() ?: "")
+        call.enqueue(object: Callback<User> {
+            override fun onResponse(call: Call<User>, response: Response<User>) {
+                onSuccess(response.body()?.toString() ?: "")
             }
 
-            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+            override fun onFailure(call: Call<User>, t: Throwable) {
 
             }
         })
